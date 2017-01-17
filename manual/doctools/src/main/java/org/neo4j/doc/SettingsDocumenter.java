@@ -139,7 +139,7 @@ public class SettingsDocumenter
                    "|Description a|%s%n" +
                    "|Valid values a|%s%n",
                 item.id(), item.name(),
-                item.description(), item.validationMessage() );
+                item.theDescription(), item.validationMessage() );
 
         if ( item.hasDefault() )
         {
