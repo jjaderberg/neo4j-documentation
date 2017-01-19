@@ -62,42 +62,31 @@ public class SettingsDescription
         {
             fieldAsSetting( settingClass, instance, field ).ifPresent( (setting) -> {
                 String name = setting.name();
-                String description = field.getAnnotation( Description.class ).value();
+                Optional<String> description = Optional.of(field.getAnnotation( Description.class ).value());
                 String validationMessage = setting.toString();
+//                Optional<String> defaultValue = Optional.empty();
                 String defaultValue = null;
-                String mandatoryMessage = null;
 
                 String deprecationMessage = field.isAnnotationPresent( Obsoleted.class )
                                             ? field.getAnnotation( Obsoleted.class ).value()
                                             : field.isAnnotationPresent( Deprecated.class )
                                               ? "The `" + name + "` configuration setting has been deprecated."
                                               : null;
-                try
-                {
-                    Object rawDefault = setting.apply( from -> null );
-                    defaultValue = rawDefault != null ? rawDefault.toString() : null;
-                    if (name.equals("dbms.threads.worker_count")) {
-                        defaultValue = "The minimum between \"number of processors\" and 500";
-                    }
-                }
-                catch ( IllegalArgumentException iae )
-                {
-                    if ( iae.toString().contains( "mandatory" ) )
-                    {
-                        mandatoryMessage = "The " + name + " configuration setting is mandatory.";
-                    }
+
+                Object rawDefault = setting.apply( from -> null );
+                if (name.equals("dbms.threads.worker_count")) {
+                    defaultValue = "The minimum between \"number of processors\" and 500";
+                } else if (null != rawDefault) {
+                    defaultValue = rawDefault.toString();
                 }
 
                 settings.add( new SettingDescriptionImpl(
                         "config_" + (name.replace( "(", "").replace( ")", "" ) ),
                         name, description,
-                        mandatoryMessage,
                         deprecationMessage,
                         validationMessage,
                         defaultValue,
-                        deprecationMessage != null,
-                        mandatoryMessage != null,
-                        defaultValue != null
+                        null != deprecationMessage, null != defaultValue
                 ));
             });
         }

@@ -139,16 +139,11 @@ public class SettingsDocumenter
                    "|Description a|%s%n" +
                    "|Valid values a|%s%n",
                 item.id(), item.name(),
-                item.theDescription(), item.validationMessage() );
+                item.description().get(), item.validationMessage() );
 
         if ( item.hasDefault() )
         {
             out.printf("|Default value m|%s%n", item.defaultValue() );
-        }
-
-        if ( item.isMandatory() )
-        {
-            out.printf( "|Mandatory a|%s%n", item.mandatoryDescription() );
         }
 
         if ( item.isDeprecated() )
@@ -170,7 +165,7 @@ public class SettingsDocumenter
      * @return the formatted paragraph
      */
     private String formatParagraph( String settingName, String paragraph,
-            Function<String,String> renderReferenceToOtherSetting )
+            Function<String, String> renderReferenceToOtherSetting )
     {
         return ensureEndsWithPeriod( transformSettingNames( paragraph, settingName, renderReferenceToOtherSetting ) );
     }
@@ -179,7 +174,7 @@ public class SettingsDocumenter
      * Takes a blob of text, finds references to settings in the text, and transforms
      * them with the passed-in lambda.
      */
-    private String transformSettingNames( String text, String settingBeingRendered, Function<String,String> transform )
+    private String transformSettingNames( String text, String settingBeingRendered, Function<String, String> transform )
     {
         Matcher matcher = CONFIG_SETTING_PATTERN.matcher( text );
         StringBuffer result = new StringBuffer( 256 );
