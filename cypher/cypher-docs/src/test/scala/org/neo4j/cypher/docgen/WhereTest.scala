@@ -217,6 +217,28 @@ class WhereTest extends DocumentingTest {
           resultTable()
         }
       }
+      section("Investigation: Escaping in regular expressions", "investigation-escaping-in-regular-expressions") {
+        p(
+          """This is a dummy query to investigate how the prettifier might break queries with escape sequences.
+            |The query below gets prettified and printed thus:
+            |
+            |UNWIND ['foo	bar', 'foo\tbar'] AS string
+            |WITH string
+            |WHERE string =~ 'foo\tbar'
+            |RETURN count(string)
+            |
+            |This is a different query, with a different result, than the query that we actually run in the test.""".stripMargin)
+        query(
+          """UNWIND ['foo\tbar', 'foo\\tbar'] AS string
+            |WITH string
+            |WHERE string =~ 'foo\\tbar'
+            |RETURN count(string)""".stripMargin, ResultAssertions((r) => {
+            r.toList should equal(List(Map("count(string)" -> 1)))
+          })) {
+          p("The name, age and address for the *'Tobias'* node are returned because his address is in *'Sweden/Malmo'*.")
+          resultTable()
+        }
+      }
       section("Case-insensitive regular expressions", "case-insensitive-regular-expressions") {
         p("By pre-pending a regular expression with `(?i)`, the whole expression becomes case-insensitive.")
         query("MATCH (n)\nWHERE n.name =~ '(?i)ANDR.*'\nRETURN n.name, n.age", ResultAssertions((r) => {
