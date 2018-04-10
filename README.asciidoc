@@ -1,5 +1,7 @@
 = About Neo4j documentation
 
+TEST
+
 This repository contains tools and tests for proving and generating documentation for https://github.com/neo4j/neo4j/[Neo4j].
 
 All docs sources are maintained in AsciiDoc format.
